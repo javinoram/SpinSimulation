@@ -69,12 +69,12 @@ def pauli_matrices(spin: float) -> dict:
 """
 Construir matriz asociada al operador ingresado
 input:
-    - operadores (string): String que representa el operador, esto debe estar ordenado segun la definicion del problema
+    - operator (string): String que representa el operador, esto debe estar ordenado segun la definicion del problema
     - spines ([float]): Lista del valor del spin en cada uno de los sitios
 output:
-    - Matriz en formato sparse del operador ingresado
+    - Arreglo de numpy que representa el operador ingresado
 """
-def construct_term( operator: str, spins: list) -> sc.sparse:
+def construct_term( operator: str, spins: list) -> np.array:
     # Diccionario con las matrices de los espines no repetidos
     spin_system = list( set(spins) )
     matrices = { s : pauli_matrices(s) for s in spin_system }
@@ -83,15 +83,28 @@ def construct_term( operator: str, spins: list) -> sc.sparse:
     # producto kronecker
     result = matrices[ spins[0] ][operator[0]]
     for i, op in enumerate(operator[1:]):
-        result = sc.sparse.kron(result, matrices[spins[i]][op] )
-    return result
+        result = sc.sparse.kron(result, matrices[spins[i+1]][op] )
+    
+    # Filtro para limpiar la matriz de terminos imaginarios cuando la cantidad de
+    # operadores 'Y' es par.
+    if operator.count('Y')%2 == 0:
+        result = np.real(result)
+    return result.toarray()
 
 
-def construct_hamiltonian() -> sc.sparse:
-    return
+"""
+Construir matriz asociada al hamiltoniano ingresado
+input:
+    - operator ([string]): Lista de string, cada uno representa un operador del hamiltoniano
+    - spines ([float]): Lista del valor del spin en cada uno de los sitios
+output:
+    - Arreglo de numpy que representa el hamiltoniano
+"""
+def construct_hamiltonian(list_operators: list, spins: list) -> np.array:
+    size = np.prod( 2*np.array(spins)+1 )
+    base = np.zeros( (int(size), int(size)) )
 
-
-#for i in pauli_matrices(1.0):
-#    print( i.toarray() )
-
-#print( construct_term("II", [0.5, 0.5]).toarray() )
+    # Loop para construir cada termino del hamiltoniano
+    for (exchange, op) in list_operators:
+        base = base + exchange*construct_term(op, spins)
+    return base
