@@ -1,6 +1,5 @@
 import numpy as np
 import scipy as sc
-import jax
 
 """
 Kronecker delta funcion
