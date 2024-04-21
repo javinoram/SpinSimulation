@@ -29,7 +29,7 @@ for J, op in zip(exchanges, SiSjvectores):
 #Obtener la matriz (numpy array) asociada al hamiltoniano
 H = construct_hamiltonian(terminos, espines) 
 ```
-De esta forma obtenemos la representacion matricial del hamiltoniano usando los indices del operador $S_iS_j$ (siempre respetando $i<j$).
+De esta forma obtenemos la representacion matricial del hamiltoniano usando los indices del operador $S_iS_j$ (siempre respetando que $i$ sea menor o igual que $j$ ).
 
 Dependiendo de la naturaleza del hamiltoniano, este se puede volver mas o menos complejo, pero la idea general es la simplicidad para construirlo, sin tener la necesidad de construir las matrices de pauli y hacer los productos kronecker respectivos.
 
@@ -44,3 +44,13 @@ H = construct_hamiltonian(terminos, espines)
 
 ### Ejemplo de calcular un observable
 Considerando el hamiltoniano del ejemplo anterior, aca se usan unidades de *eV/K* para la constante de Boltzmann.
+
+```python
+from spinsim.thermodynamic import hermitian_specific_heat
+
+#Retorna las matrices en formato sparse de cada termino
+temperatura = np.linspace(0.00001, 100, 10000)
+valores = hermitian_specific_heat(H, temperatura) 
+```
+
+De esta manera, podemos calcular el calor especifico del hamiltoniano entre $0.00001$ a $100$ (K).

@@ -3,7 +3,7 @@ import numpy.linalg as la
 from mpmath import *
 np.seterr(all='raise') 
 
-dtype = 'float64' # max value709
+dtype = 'float128'
 boltz = 8.617333262e-5 #eV/K
 
 """ 
@@ -15,21 +15,16 @@ output:
     - Arreglo con las probabilidades asociadas a cada valor de energia
 """
 def prob_states(ee: np.array, t: float):
-    # Prueba de que el exponente supere el maximo permitido de la exponencial
-    # antes de que ocurra un overflow
-    if np.divide(-ee[0], t*boltz, dtype=dtype)>709:
-        # Aca se ocupa la libreria mpmath
-        mp.dps=100
-        partition = [ exp( (-e)/(t*boltz) ) for e in ee ]
-        Z = sum(partition)
-        partition = [ float(p/Z) if p/Z >= 1e-8 else 0.0 for p in partition ]
-    else:
-        # En caso de que el entero sea menor, se utiliza las funcionalidades de numpy
+    try:
         partition = np.exp( np.divide(-ee, t*boltz, dtype=dtype), dtype=dtype )
         Z = np.sum(partition, dtype=dtype)
-        partition = [val if val>=1e-8  else 0.0 for val in np.divide( partition, Z, dtype=dtype )]
-    return np.array(partition)
-
+        partition = np.divide( partition, Z, dtype=dtype )
+    except FloatingPointError:
+        mp.dps=70
+        partition = [ exp( (-e)/(t*boltz) ) for e in ee ]
+        Z = sum(partition)
+        partition = [ float(p/Z) for p in partition ]
+    return np.round( np.array(partition), 8)
 
 """ 
 Funcion para calcular el logaritmo de la funcion de particion Z
@@ -40,19 +35,15 @@ output:
     - Logaritmo natural de Z
 """
 def Z_function(ee: np.array, t: float) -> np.array:
-    # Prueba de que el exponente supere el maximo permitido de la exponencial
-    # antes de que ocurra un overflow
-    if np.divide(-ee[0], t*boltz, dtype=dtype)>709:
-        # Aca se ocupa la libreria mpmath
-        mp.dps=100
-        partition = [ exp( (-e)/(t*boltz) ) for e in ee ]
-        Z = sum(partition)
-        Z = log(Z)
-    else:
-        # En caso de que el entero sea menor, se utiliza las funcionalidades de numpy
+    try:
         partition = np.exp( np.divide(-ee, t*boltz, dtype=dtype), dtype=dtype )
         Z = np.sum(partition, dtype=dtype)
         Z =np.log(Z)
+    except FloatingPointError:
+        mp.dps=70
+        partition = [ exp( (-e)/(t*boltz) ) for e in ee ]
+        Z = sum(partition, dtype=dtype)
+        Z = log(Z)
     return float(Z)
 
 
