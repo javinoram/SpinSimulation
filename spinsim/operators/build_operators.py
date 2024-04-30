@@ -1,6 +1,3 @@
-import numpy as np
-import scipy as sc
-
 """
 input:
     - size (int): Numero de espines del sistema

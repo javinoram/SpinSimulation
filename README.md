@@ -1,5 +1,5 @@
 # SpinSim
-Libreria de codigo abierto de python para construir y realizar simulaciones termodinamicas de sistemas de espines.
+Libreria de codigo abierto de python para construir y calcular predicciones termodinamicas de sistemas de espines.
 
 ## Casos de uso
 ### Ejemplo de construir hamiltoniano
@@ -36,10 +36,10 @@ Dependiendo de la naturaleza del hamiltoniano, este se puede volver mas o menos 
 En caso de querer las matrices asociadas a cada termino, se puede usar la funcion (considerando querer variar exchanges y no querer estar reconstruyendo todo en cada iteracion):
 
 ```python
-from spinsim.hamiltonian import set_sij_vector
+from spinsim.hamiltonian import construct_term
 
 #Retorna las matrices en formato sparse de cada termino
-H = construct_hamiltonian(terminos, espines) 
+H = [ construct_term(t, espines) for t in terminos ]
 ```
 
 ### Ejemplo de calcular un observable
@@ -48,7 +48,6 @@ Considerando el hamiltoniano del ejemplo anterior, aca se usan unidades de *eV/K
 ```python
 from spinsim.thermodynamic import hermitian_specific_heat
 
-#Retorna las matrices en formato sparse de cada termino
 temperatura = np.linspace(0.00001, 100, 10000)
 valores = hermitian_specific_heat(H, temperatura) 
 ```
