@@ -1,9 +1,7 @@
 import numpy as np
-import numpy.linalg as la
-from mpmath import *
+import mpmath as mp
 np.seterr(all='raise') 
-
-dtype = 'float128'
+dtype = 'float64'
 boltz = 8.617333262e-5 #eV/K
 
 """ 
@@ -15,16 +13,18 @@ output:
     - Arreglo con las probabilidades asociadas a cada valor de energia
 """
 def prob_states(ee: np.array, t: float):
+    beta = 1.0/(t*boltz)
+    ee_var = -ee*beta
     try:
-        partition = np.exp( np.divide(-ee, t*boltz, dtype=dtype), dtype=dtype )
+        partition = np.exp( ee_var, dtype=dtype )
         Z = np.sum(partition, dtype=dtype)
         partition = np.divide( partition, Z, dtype=dtype )
     except FloatingPointError:
         mp.dps=70
-        partition = [ exp( (-e)/(t*boltz) ) for e in ee ]
-        Z = sum(partition)
-        partition = [ float(p/Z) for p in partition ]
-    return np.round( np.array(partition), 8)
+        partition = [ mp.exp( e ) for e in ee_var ]
+        Z = mp.fdiv( 1.0, mp.fsum(partition) )
+        partition = [ float( mp.fmul(p, Z) ) for p in partition ]
+    return np.array(partition)
 
 """ 
 Funcion para calcular el logaritmo de la funcion de particion Z
@@ -35,15 +35,17 @@ output:
     - Logaritmo natural de Z
 """
 def Z_function(ee: np.array, t: float) -> np.array:
+    beta = 1.0/(t*boltz)
+    ee_var = -ee*beta
     try:
-        partition = np.exp( np.divide(-ee, t*boltz, dtype=dtype), dtype=dtype )
+        partition = np.exp( ee_var, dtype=dtype )
         Z = np.sum(partition, dtype=dtype)
-        Z =np.log(Z)
+        Z = np.log(Z)
     except FloatingPointError:
         mp.dps=70
-        partition = [ exp( (-e)/(t*boltz) ) for e in ee ]
-        Z = sum(partition, dtype=dtype)
-        Z = log(Z)
+        partition = [ mp.exp( e ) for e in ee_var ]
+        Z = mp.fsum(partition)
+        Z = mp.log(Z)
     return float(Z)
 
 
@@ -64,9 +66,10 @@ def hermitian_specific_heat(O: np.array, temp: np.array) -> np.array:
     # Funcion para calcular el calor espeficico
     def specific_heat(t: float) -> float:
         partition = prob_states(ee, t)
-        aux1 = np.sum(partition*ee, dtype=dtype)
-        aux2 = np.sum(partition*(ee**2), dtype=dtype)
-        return np.divide(aux2- (aux1**2), (t*t*boltz), dtype=dtype)
+        aux1 = np.sum( partition*ee, dtype=dtype )
+        aux2 = np.sum( partition*(ee**2), dtype=dtype )
+        aux3 = aux2- (aux1**2)
+        return np.divide(aux3, (t*t*boltz), dtype=dtype)
 
     return np.array( [ specific_heat(t) for t in temp ] )
 
@@ -113,3 +116,5 @@ def hermitian_expected_value(O: np.array, Op: np.array, temp: np.array) -> np.ar
         exp_val = np.sum( proyeccion*partition, dtype=dtype)
         return exp_val   
     return np.array( [ valor_esperado(t) for t in temp ] )
+
+
