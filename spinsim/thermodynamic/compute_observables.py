@@ -55,16 +55,16 @@ def log_z_function(ee: np.array, t: float, pre: int) -> np.array:
 """ 
 Funcion que calcula el calor especifico para un conjunto de temperaturas
 input: 
-    - O (numpy array): Operador hermitiano al que se le quiere calcular el
+    - op (numpy array): Operador hermitiano al que se le quiere calcular el
     calor especifico
     - temp (numpy array): Arreglo con las temperaturas
     - pre (int): Entero positivo que indica la precision para calculos grandes
 output:
     - Valor del calor especifico en cada temperatura
 """
-def hermitian_specific_heat(O: np.array, temp: np.array, pre: int) -> np.array:
+def hermitian_specific_heat(op: np.array, temp: np.array, pre: int) -> np.array:
     # Calcular valores propios del operador O hermitiano
-    ee = np.linalg.eigvalsh(O)
+    ee = np.linalg.eigvalsh(op)
 
     # Funcion para calcular el calor espeficico
     def specific_heat(t: float) -> float:
@@ -80,15 +80,15 @@ def hermitian_specific_heat(O: np.array, temp: np.array, pre: int) -> np.array:
 """ 
 Funcion que calcula la entropia para un conjunto de temperaturas
 input: 
-    - O (numpy array): Operador hermitiano al que se le quiere calcular la entropia
+    - op (numpy array): Operador hermitiano al que se le quiere calcular la entropia
     - temp (numpy array): Arreglo con las temperaturas
     - pre (int): Entero positivo que indica la precision para calculos grandes
 output:
     - Valor de la entropia en cada temperatura
 """
-def hermitian_entropy(O: np.array, temp: np.array, pre: int) -> np.array:
+def hermitian_entropy(op: np.array, temp: np.array, pre: int) -> np.array:
     # Calcular valores propios del operador O hermitiano
-    ee = np.linalg.eigvalsh(O)
+    ee = np.linalg.eigvalsh(op)
 
     # Funcion para calcular la entropia
     def entropy(t: float) -> float:
@@ -103,17 +103,17 @@ def hermitian_entropy(O: np.array, temp: np.array, pre: int) -> np.array:
 """ 
 Funcion que calcula el valor esperado de un operador
 input: 
-    - O (numpy array): Operador hermitiano al que se le toman los valores y vectores propios
-    - Op (numpy array): Operador al que se le calcula el valor esperado
+    - op_base (numpy array): Operador hermitiano al que se le toman los valores y vectores propios
+    - operator (numpy array): Operador al que se le calcula el valor esperado
     - temp (numpy array): Arreglo con las temperaturas
     - pre (int): Entero positivo que indica la precision para calculos grandes
 output:
     - Arreglo de los valores esperados a diferentes temperaturas
 """
-def hermitian_expected_value(O: np.array, Op: np.array, temp: np.array, pre: int) -> np.array:
+def hermitian_expected_value(op_base: np.array, operator: np.array, temp: np.array, pre: int) -> np.array:
     # Calcular valores propios del operador O hermitiano
-    ee, vv = np.linalg.eigh(O)
-    proyeccion= np.array( [ ((vv[:,k]).T.conj()).dot(Op).dot(vv[:,k]) for k in range(len(ee))] )
+    ee, vv = np.linalg.eigh(op_base)
+    proyeccion= np.array( [ ((vv[:,k]).T.conj()).dot(operator).dot(vv[:,k]) for k in range(len(ee))] )
 
     # Funcion para calcular el valor esperado generico
     def valor_esperado(t: float) -> float: 

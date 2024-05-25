@@ -17,7 +17,10 @@ output:
 def von_neumann_entropy(ee: np.array, pre: int) -> float:
     ee = ee[ ee>0 ]
     try:
-        vn = np.sum( -ee*np.log(ee, dtype=dtype), dtype=dtype )
+        if len(ee)>0:
+            vn = np.sum( -ee*np.log(ee, dtype=dtype), dtype=dtype )
+        else:
+            return 0
     except FloatingPointError:
         with mp.workdps(pre):
             vn = mp.fsum( [ -e*mp.log( e ) for e in ee ] )
@@ -66,8 +69,8 @@ output:
     Valor de la similitud entre los estados
 """
 def fidelity_states( state1: np.array, state2: np.array ) -> float:
-    val1 = state1.conj().T*state2
-    val2 = state2.conj().T*state1
+    val1 = state1.conj().T@state2
+    val2 = state2.conj().T@state1
     return val1*val2
 
 
@@ -96,16 +99,16 @@ Funcion que permite calcular la entropia de von Neumann de la matriz de densidad
 una topologia lineal. Para entender el proceso, considera que los espines son ordenados de forma lineal siguiendo la
 enumeracion ingresada y en base a ella se procede a aplicar una traza parcial hasta que no quede mas sistema.
 input:
-    Op: Operador al que se le va a calcular la entropia en cada traza parcial.
+    op: Operador al que se le va a calcular la entropia en cada traza parcial.
     spin_list: Lista con el valor de los espines en cada sito
 output:
     Lista con los valores de la entropia en cada aplicacion de la traza que van desde no aplicarla hasta que no quede nada.
 """
-def entanglement_entropy_per_site_gs(Op: np.array, spin_list: list) -> list:
-    ee, vv = np.linalg.eigh(Op)
+def entanglement_entropy_per_site_gs(op: np.array, spin_list: list) -> list:
+    ee, vv = np.linalg.eigh(op)
     cant = count_rep_gs(ee, 1e-7)
 
-    density = np.zeros( Op.shape )
+    density = np.zeros( op.shape )
     for i in range(cant):
         state = np.array( [[j] for j in vv[:,i]] )
         state_dag = state.conj().T
