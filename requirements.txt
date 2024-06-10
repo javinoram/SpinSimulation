@@ -2,3 +2,4 @@ numpy
 mpmath
 pytest
 scipy
+dask[complete]
