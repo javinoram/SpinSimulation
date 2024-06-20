@@ -42,14 +42,30 @@ from spinsim.hamiltonian import construct_term
 H = [ construct_term(t, espines) for t in terminos ]
 ```
 
-### Ejemplo de calcular un observable
+### Ejemplo de calcular un observable no paralelo
 Considerando el hamiltoniano del ejemplo anterior, aca se usan unidades de *eV/K* para la constante de Boltzmann.
 
 ```python
-from spinsim.thermodynamic import hermitian_specific_heat
+from spinsim.thermodynamic import specific_heat_workflow
 
 temperatura = np.linspace(0.00001, 100, 10000)
-valores = hermitian_specific_heat(H, temperatura) 
+valores = specific_heat_workflow(H, temperatura, 90, False, None) 
 ```
 
-De esta manera, podemos calcular el calor especifico del hamiltoniano entre $0.00001$ a $100$ (K).
+De esta manera, podemos calcular el calor especifico del hamiltoniano entre $0.00001$ a $100$ (K) de forma secuencial.
+
+
+### Ejemplo de calcular un observanle usando calculos paralelos
+Siguiendo el ejemplo anterior, la idea es hacer los mismos calculos usando paralelizacion, para ello, utilizamos de fondo la libreria dask. En el codigo de abajo se muestra un ejemplo de como se veria su uso
+
+
+```python
+from spinsim.thermodynamic import specific_heat_workflow
+
+temperatura = np.linspace(0.00001, 100, 10000)
+parallel_dict = { 'scheduler': 'threads', 'num_workers': 4 }
+valores = specific_heat_workflow(H, temperatura, 90, True, parallel_dict)
+```
+
+Los ultimos dos parametros de la funcion son una flag y los valores necesarios para que la funcion se ejecute de forma paralela para los diferentes puntos de temperatura
+

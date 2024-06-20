@@ -9,7 +9,7 @@ def test_partial_trace():
 
 def test_vn_entropy():
     rho = np.array([1, 0])
-    assert np.abs( ss.information.von_neumann_entropy(rho, 90) ) <= 1e-7
+    assert np.abs( ss.information.von_neumann_entropy(rho) ) <= 1e-7
 
 
 def test_concurrence():
