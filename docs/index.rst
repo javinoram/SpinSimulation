@@ -1,20 +1,15 @@
-.. SpinSimulation documentation master file, created by
-   sphinx-quickstart on Thu Jun 20 13:11:38 2024.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to SpinSimulation's documentation!
+SpinSim Python Package
 ==========================================
+SpinSim is a package created to make the process of construct the matrix representation
+of a hamiltonian more easily. Also, a lot of functions and workflow are implementated to 
+compute different quantities (magnethermal, entropy, entanglement and others).
+
+User Documentation
+--------------------
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   getting_started
+   hamiltonian_tutorials
+   thermodynamic_tutorials

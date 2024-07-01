@@ -6,7 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'SpinSimulation'
+project = 'SpinSim.py'
 copyright = '2024, Javier Norambuena Leiva'
 author = 'Javier Norambuena Leiva'
 
@@ -23,5 +23,5 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'alabaster'
+html_theme = 'renku'
 html_static_path = ['_static']
